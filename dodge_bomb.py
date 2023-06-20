@@ -65,9 +65,16 @@ def main():
         sum_mv = [0, 0]  # 合計移動量
         for k, mv in delta.items():
             if key_lst[k] and not gameover_check:
-                #ゲームオーバー時でないときキーが押されたら 
+                # ゲームオーバー時でないときキーが押されたら 
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+
+        if key_lst[pg.K_SPACE]:
+            # スペースキーが押されている間,こうかとんの速度を5倍に
+            sum_mv[0] *= 5
+            sum_mv[1] *= 5
+
+
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
@@ -85,7 +92,7 @@ def main():
             if not tate:
                 vy *= -1
             screen.blit(bd_img, bd_rct)
-        if gameover_check:
+        elif gameover_check:
             # ゲームオーバー時
             screen.blit(go_img, kk_rct)
             # ゲームオーバー時に画像を切り替える
