@@ -3,7 +3,7 @@ import sys
 import pygame as pg
 
 
-WIDTH, HEIGHT = 1600, 900
+WIDTH, HEIGHT = 1000, 600
 delta = {
     pg.K_UP: (0, -5),
     pg.K_DOWN: (0, +5),
@@ -45,15 +45,34 @@ def main():
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True, True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
  
         screen.blit(bg_img, [0, 0])
         screen.blit(kk_img, kk_rct)
         bd_rct.move_ip(vx, vy)  # 練習２
+        yoko, tate = check_bound(bd_rct)
+        if not yoko:
+            vx *= -1
+        if not tate:
+            vy *= -1
         screen.blit(bd_img, bd_rct)
         pg.display.update()
         tmr += 1
         clock.tick(50)
 
+def check_bound(rect: pg.rect) -> tuple[bool, bool]:
+    """
+    こうかとん、爆弾が画面内or画面外かを判定する関数
+    引数：こうかとんor爆弾Rect
+    戻り値：横方向、縦方向の判定結果タプル(True:画面内/False:画面外)
+    """
+    yoko, tate = True, True
+    if rect.left < 0 or WIDTH < rect.right:  #横方向判定
+        yoko = False
+    if rect.top < 0 or HEIGHT < rect.bottom:  #縦方向判定
+        tate = False
+    return yoko, tate
 
 if __name__ == "__main__":
     pg.init()
