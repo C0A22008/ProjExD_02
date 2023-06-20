@@ -1,5 +1,7 @@
 import random
 import sys
+
+
 import pygame as pg
 
 
@@ -45,6 +47,7 @@ def main():
     tmr = 0
     after_go_time_count = 0
     #ゲームオーバー後に経過した時間を記録する変数
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
