@@ -19,6 +19,9 @@ def main():
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
     # こうかとんSurface（kk_img）からこうかとんRect（kk_rct）を抽出する
+    go_img = pg.image.load("ex02/fig/8.png")
+    go_img = pg.transform.rotozoom(go_img, 0, 2.0)
+    # ゲームオーバー時に表示する画像
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
     bd_img = pg.Surface((20, 20))  # 練習１
@@ -31,22 +34,31 @@ def main():
     # 爆弾Rectの中心座標を乱数で指定する
     bd_rct.center = x, y 
     vx, vy = +5, +5  # 練習２
+    gameover_check = False
+    # ゲームオーバーの判定 ゲームオーバー時にTrue
 
     clock = pg.time.Clock()
     tmr = 0
+    time_count = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
             
         if kk_rct.colliderect(bd_rct):  # 練習５
-            print("ゲームオーバー")
-            return  #ゲームオーバー
+            gameover_check = True
+            if time_count == 0:
+                go_time = tmr
+            time_count = tmr
+            if (time_count - go_time) >= 80:
+                print("ゲームオーバー")
+                return  #ゲームオーバー
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]  # 合計移動量
         for k, mv in delta.items():
-            if key_lst[k]: 
+            if key_lst[k] and not gameover_check:
+                #ゲームオーバー時でないときキーが押されたら 
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
         kk_rct.move_ip(sum_mv)
@@ -54,17 +66,43 @@ def main():
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
  
         screen.blit(bg_img, [0, 0])
-        screen.blit(kk_img, kk_rct)
-        bd_rct.move_ip(vx, vy)  # 練習２
-        yoko, tate = check_bound(bd_rct)
-        if not yoko:
-            vx *= -1
-        if not tate:
-            vy *= -1
-        screen.blit(bd_img, bd_rct)
+
+        if not gameover_check:
+            # 通常時
+            screen.blit(kk_img, kk_rct)
+
+            bd_rct.move_ip(vx, vy)  # 練習２
+            yoko, tate = check_bound(bd_rct)
+            if not yoko:
+                vx *= -1
+            if not tate:
+                vy *= -1
+            screen.blit(bd_img, bd_rct)
+        if gameover_check:
+            # ゲームオーバー時
+            screen.blit(go_img, kk_rct)
+            # ゲームオーバー時に画像を切り替える
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+        if vx < 20:
+            """
+            爆弾の加速
+            速度が20になるまで1フレームに0.1ずつ加速
+            """
+            if vx > 0:
+                vx += 0.1
+            else:
+                vx -= 0.1
+            if vy > 0:
+                vy += 0.1
+            else:
+                vy -= 0.1
+
+        if time_count != 0:
+            time_count += 1
 
 def check_bound(rect: pg.rect) -> tuple[bool, bool]:
     """
