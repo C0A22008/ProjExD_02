@@ -39,7 +39,8 @@ def main():
 
     clock = pg.time.Clock()
     tmr = 0
-    time_count = 0
+    after_go_time_count = 0
+    #ゲームオーバー後に経過した時間を記録する変数
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -47,12 +48,18 @@ def main():
             
         if kk_rct.colliderect(bd_rct):  # 練習５
             gameover_check = True
-            if time_count == 0:
+            if after_go_time_count == 0:
                 go_time = tmr
-            time_count = tmr
-            if (time_count - go_time) >= 80:
+                # ゲームオーバー時に時間を記録する
+            after_go_time_count = tmr
+            """
+            ゲームオーバー時の時間を記録する。time_countは増加
+            していき、80フレーム経過したら(go_timeとtime_count
+            の差が80以上になったら)画面を閉じる
+            """
+            if (after_go_time_count - go_time) >= 80:
                 print("ゲームオーバー")
-                return  #ゲームオーバー
+                return
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]  # 合計移動量
@@ -87,10 +94,10 @@ def main():
         tmr += 1
         clock.tick(50)
 
-        if vx < 20:
+        if vx < 15:
             """
             爆弾の加速
-            速度が20になるまで1フレームに0.1ずつ加速
+            速度が15になるまで1フレームに0.1ずつ加速
             """
             if vx > 0:
                 vx += 0.1
@@ -101,8 +108,9 @@ def main():
             else:
                 vy -= 0.1
 
-        if time_count != 0:
-            time_count += 1
+        if after_go_time_count != 0:
+            after_go_time_count += 1
+            # ゲームオーバー後に経過した時間を記録する
 
 def check_bound(rect: pg.rect) -> tuple[bool, bool]:
     """
