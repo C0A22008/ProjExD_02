@@ -55,6 +55,9 @@ def main():
             if after_go_time_count == 0:
                 go_time = tmr
                 # ゲームオーバー時に時間を記録する
+                survive_time = go_time/50
+                # 生存時間を秒変換する
+                
             after_go_time_count = tmr
             """
             ゲームオーバー時の時間を記録する。time_countは増加
@@ -63,6 +66,7 @@ def main():
             """
             if (after_go_time_count - go_time) >= 80:
                 print("ゲームオーバー")
+                print("生存時間：" + str(survive_time) + "秒")
                 return
 
         key_lst = pg.key.get_pressed()
